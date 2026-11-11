@@ -41,6 +41,7 @@ public static class ConfigSyncManager
         payload.Append($"{Configuration.Instance.UnlockLevel.Rank}:{Configuration.Instance.UnlockLevel.Tier},");
         payload.Append($"{Configuration.Instance.EnableSearch},");
         payload.Append($"{Configuration.Instance.StorageSlots},");
+        payload.Append($"{Configuration.Instance.EnableSelling},");
         payload.Append(']');
 
         Logger.Info($"Syncing payload to clients: {payload}");
@@ -99,5 +100,6 @@ public static class ConfigSyncManager
         Configuration.Instance.UnlockLevel = new FullRank(rank, tier);
         Configuration.Instance.EnableSearch = bool.Parse(parts[2]);
         Configuration.Instance.StorageSlots = int.Parse(parts[3]);
+        Configuration.Instance.HostAllowsSelling = parts.Length <= 4 || bool.Parse(parts[4]);
     }
 }

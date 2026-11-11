@@ -50,6 +50,7 @@ public class PlayerBackpack : MonoBehaviour
     public static PlayerBackpack Instance { get; private set; }
 
     public bool IsUnlocked => NetworkSingleton<LevelManager>.Instance.GetFullRank() >= Configuration.Instance.UnlockLevel;
+    public bool IsAvailable => _backpackEnabled && IsUnlocked;
     public bool IsOpen => Singleton<StorageMenu>.Instance.IsOpen && Singleton<StorageMenu>.Instance.TitleLabel.text == StorageName;
 #if IL2CPP
     public Il2CppSystem.Collections.Generic.List<ItemSlot> ItemSlots => _storage.ItemSlots.Cast<Il2CppSystem.Collections.Generic.IEnumerable<ItemSlot>>().ToList();

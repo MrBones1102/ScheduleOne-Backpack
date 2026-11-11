@@ -19,6 +19,7 @@ public class Configuration
     private readonly MelonPreferences_Category _generalCategory;
     private readonly MelonPreferences_Entry<KeyCode> _toggleKeyEntry;
     private readonly MelonPreferences_Entry<bool> _enableSearchEntry;
+    private readonly MelonPreferences_Entry<bool> _enableSellingEntry;
 
     private readonly MelonPreferences_Category _backpackCategory;
     // FullRank (a struct) can't be shown by in-game mod menus, so rank and tier are separate entries.
@@ -32,6 +33,7 @@ public class Configuration
         _generalCategory.SetFilePath(_configFile, false);
         _toggleKeyEntry = _generalCategory.CreateEntry("ToggleKey", KeyCode.B, "Key to toggle backpack");
         _enableSearchEntry = _generalCategory.CreateEntry("EnableSearch", false, "Enable police search for backpack items");
+        _enableSellingEntry = _generalCategory.CreateEntry("EnableSelling", true, "Allow handing over items from the backpack in deals (in multiplayer, the host can disable this for everyone)");
 
         _backpackCategory = MelonPreferences.CreateCategory("Backpack");
         _backpackCategory.SetFilePath(_configFile, false);
@@ -42,6 +44,18 @@ public class Configuration
 
     public KeyCode ToggleKey { get; set; }
     public bool EnableSearch { get; set; }
+
+    /// <summary>
+    /// Local preference, read live so toggling it in a mod menu applies to the next deal without a reload.
+    /// </summary>
+    public bool EnableSelling => _enableSellingEntry.Value;
+
+    /// <summary>
+    /// Set from the host's config in multiplayer; always true in single-player and on the host.
+    /// </summary>
+    public bool HostAllowsSelling { get; internal set; } = true;
+
+    public bool CanSellFromBackpack => EnableSelling && HostAllowsSelling;
     public FullRank UnlockLevel { get; internal set; }
     public int StorageSlots { get; internal set; }
 
@@ -55,6 +69,7 @@ public class Configuration
     {
         ToggleKey = _toggleKeyEntry.Value;
         EnableSearch = _enableSearchEntry.Value;
+        HostAllowsSelling = true;
         UnlockLevel = new FullRank(_unlockRankEntry.Value, Math.Clamp(_unlockTierEntry.Value, 1, 5));
         StorageSlots = Math.Clamp(_storageSlotsEntry.Value, 1, PlayerBackpack.MaxStorageSlots);
     }
